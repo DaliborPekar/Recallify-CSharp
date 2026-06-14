@@ -9,21 +9,23 @@ namespace Recallify
             Random rand = new Random();
             int modeSelect = 1;
             bool restart = true;
-            string check;
+           
             int numQuestions = 5;
-            int index;
-            string difficulty;
+
+           
+
             int indexWeightedQuestion;
-            int indexWeightedAnswer;
+            
             int weightedIndex;
 
-            string[] questions = new string[numQuestions];
-            string[] answers = new string[numQuestions];
-            string[] ratings = new string[numQuestions];
+
+            bool modeMenu = true;
 
 
+            List<Flashcard> flashcard = new List<Flashcard>();
+            
 
-            while (1 == 1)
+            while (modeMenu)
             {
                 Console.WriteLine("Select mode: ");
                 modeSelect = Convert.ToInt32(Console.ReadLine());
@@ -31,32 +33,46 @@ namespace Recallify
                 {
                     case (1):
 
-                        StudyMode(questions, answers);
+                        StudyMode(flashcard);
                         break;
 
                     case (2):
 
-                        RecallMode(questions, answers);
+                        RecallMode(flashcard);
                         break;
 
                     case (3):
-                        AddQuesitons(questions, answers);
+                        AddQuesitons();
                         break;
+                    
                 }
+                Console.WriteLine("Do you want to change mode? (y for yes or n for no):");
+                string modeContinue = Console.ReadLine().ToLower();
+                
+                if (modeContinue == "y")
+                    modeMenu = true;
+                else
+                    modeMenu = false;
+
             }
 
 
-            void AddQuesitons(string[] questions, string[] answers)
+            void AddQuesitons()
             {
                 string wantContinue;
                 int temp = 0;
                 do
                 {
+                    Flashcard card = new Flashcard();
 
-                    Console.WriteLine($"Enter {temp} question: ");
-                    questions[temp] = Console.ReadLine();
-                    Console.WriteLine($"Enter {temp} answer: ");
-                    answers[temp] = Console.ReadLine();
+                    Console.WriteLine($"Enter {temp + 1} question: ");
+
+                    card.question = Console.ReadLine();
+
+                    Console.WriteLine($"Enter {temp + 1} answer: ");
+                    card.answer = Console.ReadLine();
+
+                    flashcard.Add(card);
 
                     temp++;
                     Console.WriteLine("Do you want to continue?");
@@ -66,60 +82,61 @@ namespace Recallify
                 while (wantContinue != "n" && temp < numQuestions);
             }
 
-            void StudyMode(string[] questions, string[] answers)
+            void StudyMode(List<Flashcard> flashcards)
             {
 
                 while (restart)
                 {
-                    foreach (string question in questions)
+                    foreach (Flashcard temp in flashcards)
                     {
-                        index = Array.IndexOf(questions, question);
-
-                        Console.WriteLine($"{question}\n");
+                        
+                        Console.WriteLine($"{temp.question}\n");
                         Console.ReadKey();
-                        Console.WriteLine($"{answers[index]}\n");
-                        Rate(index);
+                        Console.WriteLine($"{temp.answer}\n");
 
+                        Rate(temp);
+                        
                     }
                     DoRestart();
 
                 }
             }
 
-            void RecallMode(string[] questions, string[] answers)
+            void RecallMode(List<Flashcard> flashcards)
             {
                 while (restart)
                 {
-                    List<string> weighted = new List<string>();
+                    List<Flashcard> weighted = new List<Flashcard>();
 
-                    foreach (string question in questions)
+                    foreach (Flashcard temp in flashcards)
                     {
-                        index = Array.IndexOf(questions, question);
-                        if (ratings[index] == "h")
+                        
+                        if (temp.rating == "h")
                         {
-                            weighted.Add(questions[index]);
-                            weighted.Add(questions[index]);
-                            weighted.Add(questions[index]);
+                            weighted.Add(temp);
+                            weighted.Add(temp);
+                            weighted.Add(temp);
                         }
-                        else if (ratings[index] == "m")
+                        else if (temp.rating == "m")
                         {
-                            weighted.Add(questions[index]);
-                            weighted.Add(questions[index]);
+                            weighted.Add(temp);
+                            weighted.Add(temp);
                         }
                         else
                         {
-                            weighted.Add(questions[index]);
+                            weighted.Add(temp);
                         }
                     }
-                    for (weightedIndex = 1; weightedIndex <= 5; weightedIndex++)
+                    weightedIndex = rand.Next(weighted.Count);
+                    for (int i  = 1; i <= weightedIndex; i++)
                     {
                         indexWeightedQuestion = rand.Next(weighted.Count);
-                        indexWeightedAnswer = Array.IndexOf(questions, weighted[indexWeightedQuestion]);
+                        
 
-                        Console.WriteLine($"{weighted[indexWeightedQuestion]}\n");
+                        Console.WriteLine($"{weighted[indexWeightedQuestion].question}\n");
                         Console.ReadKey();
-                        Console.WriteLine($"{answers[indexWeightedAnswer]}\n");
-                        Rate(indexWeightedAnswer);
+                        Console.WriteLine($"{weighted[indexWeightedQuestion].answer}\n");
+                        Rate(weighted[indexWeightedQuestion]);
                     }
                     DoRestart();
 
@@ -128,7 +145,7 @@ namespace Recallify
 
             }
 
-            void Rate(int index)
+            void Rate(Flashcard temp)
             {
                 Console.Write("Rate this question(h for hard, m for medium, e for easy):");
                 string input = Console.ReadLine().ToLower();
@@ -137,22 +154,22 @@ namespace Recallify
                 {
                     case ("h"):
                         {
-                            ratings[index] = "h";
+                            temp.rating = "h";
                             break;
                         }
                     case ("m"):
                         {
-                            ratings[index] = "m";
+                            temp.rating = "m";
                             break;
                         }
                     case ("e"):
                         {
-                            ratings[index] = "e";
+                            temp.rating = "e";
                             break;
                         }
                     default:
                         {
-                            ratings[index] = "m";
+                            temp.rating = "m";
                             break;
                         }
 
