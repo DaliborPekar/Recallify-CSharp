@@ -17,52 +17,53 @@ namespace Recallify
             int indexWeightedAnswer;
             int weightedIndex;
 
-
-            /*
-            Console.WriteLine("Enter the number of questions: ");
-            numQuestions = Convert.ToInt32(Console.ReadLine());
-            */
-
-
             string[] questions = new string[numQuestions];
             string[] answers = new string[numQuestions];
             string[] ratings = new string[numQuestions];
 
-            questions[0] = "Question 1";
-            answers[0] = "Answer 1";
-            ratings[0] = "h";
 
-            questions[1] = "Question 2";
-            answers[1] = "Answer 2";
-            ratings[1] = "m";
 
-            questions[2] = "Question 3";
-            answers[2] = "Answer 3";
-            ratings[2] = "e";
-
-            questions[3] = "Question 4";
-            answers[3] = "Answer 4";
-            ratings[3] = "h";
-
-            questions[4] = "Question 5";
-            answers[4] = "Answer 5";
-            ratings[4] = "m";
-
-            Console.WriteLine("Select mode: ");
-            modeSelect = Convert.ToInt32(Console.ReadLine());
-
-            switch (modeSelect)
+            while (1 == 1)
             {
-                case (1):
-                    {
+                Console.WriteLine("Select mode: ");
+                modeSelect = Convert.ToInt32(Console.ReadLine());
+                switch (modeSelect)
+                {
+                    case (1):
+
                         StudyMode(questions, answers);
                         break;
-                    }
-                case (2):
-                    {
+
+                    case (2):
+
                         RecallMode(questions, answers);
                         break;
-                    }
+
+                    case (3):
+                        AddQuesitons(questions, answers);
+                        break;
+                }
+            }
+
+
+            void AddQuesitons(string[] questions, string[] answers)
+            {
+                string wantContinue;
+                int temp = 0;
+                do
+                {
+
+                    Console.WriteLine($"Enter {temp} question: ");
+                    questions[temp] = Console.ReadLine();
+                    Console.WriteLine($"Enter {temp} answer: ");
+                    answers[temp] = Console.ReadLine();
+
+                    temp++;
+                    Console.WriteLine("Do you want to continue?");
+                    wantContinue = Console.ReadLine().ToLower();
+
+                }
+                while (wantContinue != "n" && temp < numQuestions);
             }
 
             void StudyMode(string[] questions, string[] answers)
