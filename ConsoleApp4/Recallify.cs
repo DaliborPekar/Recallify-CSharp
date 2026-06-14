@@ -1,7 +1,9 @@
-﻿using System.Globalization;
+﻿using System.Collections.Concurrent;
+using System.Globalization;
 
 namespace Recallify
 {
+    public enum Rating { Easy, Medium, Hard }
     internal class Recallify
     {
         static void Main(string[] args)
@@ -12,23 +14,40 @@ namespace Recallify
            
             int numQuestions = 5;
 
-           
-
             int indexWeightedQuestion;
             
             int weightedIndex;
 
-
             bool modeMenu = true;
 
+            bool validInput = false;
 
             List<Flashcard> flashcard = new List<Flashcard>();
-            
+
+            int temp = 0;
 
             while (modeMenu)
             {
-                Console.WriteLine("Select mode: ");
-                modeSelect = Convert.ToInt32(Console.ReadLine());
+               
+                
+                while(!validInput)
+                {
+                    try
+                    {
+                        Console.WriteLine("Select mode: ");
+                        modeSelect = Convert.ToInt32(Console.ReadLine());
+                        validInput = true;
+                    }
+                    catch (FormatException)
+                    {
+                        Console.WriteLine("Enter a number!");
+                        
+                    }
+                }
+
+                validInput = false;
+                
+
                 switch (modeSelect)
                 {
                     case (1):
@@ -42,7 +61,7 @@ namespace Recallify
                         break;
 
                     case (3):
-                        AddQuesitons();
+                        AddQuestions();
                         break;
                     
                 }
@@ -55,12 +74,12 @@ namespace Recallify
                     modeMenu = false;
 
             }
+            
 
-
-            void AddQuesitons()
+            void AddQuestions()
             {
                 string wantContinue;
-                int temp = 0;
+                
                 do
                 {
                     Flashcard card = new Flashcard();
@@ -111,13 +130,13 @@ namespace Recallify
                     foreach (Flashcard temp in flashcards)
                     {
                         
-                        if (temp.rating == "h")
+                        if (temp.rating == Rating.Hard)
                         {
                             weighted.Add(temp);
                             weighted.Add(temp);
                             weighted.Add(temp);
                         }
-                        else if (temp.rating == "m")
+                        else if (temp.rating == Rating.Medium)
                         {
                             weighted.Add(temp);
                             weighted.Add(temp);
@@ -127,8 +146,34 @@ namespace Recallify
                             weighted.Add(temp);
                         }
                     }
-                    weightedIndex = rand.Next(weighted.Count);
-                    for (int i  = 1; i <= weightedIndex; i++)
+                    int numWeightedQuestions = 0;
+                    while(!validInput)
+                    {
+                        try
+                        {
+                            Console.WriteLine("How many weighted questions do you want?: ");
+                            numWeightedQuestions = Convert.ToInt32(Console.ReadLine());
+                            validInput = true;
+
+
+
+                        }
+                        catch (FormatException)
+                        {
+                            Console.WriteLine("Enter a number!");
+                        }
+                    }
+
+                    validInput = false;
+
+                    if (numWeightedQuestions > weighted.Count)
+                    {
+                        Console.WriteLine("This number excedes the number of questions!");
+                        Console.WriteLine("Using the number of question\n");
+                        numWeightedQuestions = temp;
+                    }
+
+                    for (int i  = 1; i <= numWeightedQuestions; i++)
                     {
                         indexWeightedQuestion = rand.Next(weighted.Count);
                         
@@ -150,26 +195,29 @@ namespace Recallify
                 Console.Write("Rate this question(h for hard, m for medium, e for easy):");
                 string input = Console.ReadLine().ToLower();
 
+
+                
                 switch (input)
                 {
                     case ("h"):
                         {
-                            temp.rating = "h";
+                           
+                            temp.rating = Rating.Hard;
                             break;
                         }
                     case ("m"):
                         {
-                            temp.rating = "m";
+                            temp.rating = Rating.Medium;
                             break;
                         }
                     case ("e"):
                         {
-                            temp.rating = "e";
+                            temp.rating = Rating.Easy;
                             break;
                         }
                     default:
                         {
-                            temp.rating = "m";
+                            temp.rating = Rating.Medium;
                             break;
                         }
 

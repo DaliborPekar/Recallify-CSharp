@@ -8,6 +8,6 @@ namespace Recallify
     {
         public string question;
         public string answer;
-        public string rating;
+        public Rating rating;
     }
 }
