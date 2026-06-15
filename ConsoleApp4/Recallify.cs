@@ -9,14 +9,12 @@ namespace Recallify
         static void Main(string[] args)
         {
             Random rand = new Random();
-            int modeSelect = 1;
+            int modeSelect = 0;
             bool restart = true;
-           
-            int numQuestions = 5;
+
+            int numQuestions = 0;
 
             int indexWeightedQuestion;
-            
-            int weightedIndex;
 
             bool modeMenu = true;
 
@@ -24,97 +22,119 @@ namespace Recallify
 
             List<Flashcard> flashcard = new List<Flashcard>();
 
-            int temp = 0;
+            validInput = false;
+            bool corectMode = true;
 
-            while (modeMenu)
+            while (corectMode)
             {
-               
-                
-                while(!validInput)
+
+                while (modeMenu)
                 {
-                    try
+                    while (!validInput)
                     {
-                        Console.WriteLine("Select mode: ");
-                        modeSelect = Convert.ToInt32(Console.ReadLine());
-                        validInput = true;
+                        try
+                        {
+                            Console.WriteLine("Select mode: ");
+                            modeSelect = Convert.ToInt32(Console.ReadLine());
+                            validInput = true;
+                        }
+                        catch (FormatException)
+                        {
+                            Console.WriteLine("Enter a number!");
+
+                        }
                     }
-                    catch (FormatException)
+
+                    switch (modeSelect)
                     {
-                        Console.WriteLine("Enter a number!");
+                        case (1):
+                            corectMode = false;
+                            StudyMode(flashcard);
+                            
+                            break;
+
+                        case (2):
+                            corectMode = false;
+                            RecallMode(flashcard);
+                            
+                            break;
+
+                        case (3):
+                            corectMode = false;
+                            AddQuestions();
+                           
+                            break;
+                        default:
+                            corectMode = true;
+                            validInput = false;
+                            Console.WriteLine("That mode doesnt exist!");
+                            break;
+
+                    }
+                    Console.WriteLine("Do you want to change mode? (y for yes or n for no):");
+                    string modeContinue = Console.ReadLine().ToLower();
+
+                    if (modeContinue == "y")
+                    {
+                        modeMenu = true;
+                        validInput = false;
+                        corectMode = true;
                         
                     }
+                        
+
+                    else
+                        modeMenu = false;
                 }
 
-                validInput = false;
                 
-
-                switch (modeSelect)
-                {
-                    case (1):
-
-                        StudyMode(flashcard);
-                        break;
-
-                    case (2):
-
-                        RecallMode(flashcard);
-                        break;
-
-                    case (3):
-                        AddQuestions();
-                        break;
-                    
-                }
-                Console.WriteLine("Do you want to change mode? (y for yes or n for no):");
-                string modeContinue = Console.ReadLine().ToLower();
-                
-                if (modeContinue == "y")
-                    modeMenu = true;
-                else
-                    modeMenu = false;
 
             }
-            
+
 
             void AddQuestions()
             {
                 string wantContinue;
-                
+
                 do
                 {
-                    Flashcard card = new Flashcard();
+                    
 
-                    Console.WriteLine($"Enter {temp + 1} question: ");
+                    Console.WriteLine($"Enter {numQuestions + 1} question: ");
 
-                    card.question = Console.ReadLine();
+                    string question = Console.ReadLine();
 
-                    Console.WriteLine($"Enter {temp + 1} answer: ");
-                    card.answer = Console.ReadLine();
+                    Console.WriteLine($"Enter {numQuestions + 1} answer: ");
+                    string answer = Console.ReadLine();
+
+
+                    Flashcard card = new Flashcard(question, answer);
+  
 
                     flashcard.Add(card);
 
-                    temp++;
+                    numQuestions++;
                     Console.WriteLine("Do you want to continue?");
                     wantContinue = Console.ReadLine().ToLower();
 
                 }
-                while (wantContinue != "n" && temp < numQuestions);
+                while (wantContinue != "n");
             }
 
             void StudyMode(List<Flashcard> flashcards)
             {
-
+                
                 while (restart)
                 {
-                    foreach (Flashcard temp in flashcards)
+                    foreach (Flashcard card in flashcards)
                     {
-                        
-                        Console.WriteLine($"{temp.question}\n");
-                        Console.ReadKey();
-                        Console.WriteLine($"{temp.answer}\n");
 
-                        Rate(temp);
-                        
+                        Console.WriteLine($"{card.question}\n");
+                        Console.ReadKey();
+                        Console.WriteLine($"{card.answer}\n");
+
+                        Rate(card);
+
                     }
                     DoRestart();
 
@@ -123,31 +143,37 @@ namespace Recallify
 
             void RecallMode(List<Flashcard> flashcards)
             {
+                restart = true;
                 while (restart)
                 {
                     List<Flashcard> weighted = new List<Flashcard>();
 
-                    foreach (Flashcard temp in flashcards)
+                    int lastQuestion = -1;
+
+                    foreach (Flashcard card in flashcards)
                     {
-                        
-                        if (temp.rating == Rating.Hard)
+
+                        if (card.rating == Rating.Hard)
                         {
-                            weighted.Add(temp);
-                            weighted.Add(temp);
-                            weighted.Add(temp);
+                            weighted.Add(card);
+                            weighted.Add(card);
+                            weighted.Add(card);
                         }
-                        else if (temp.rating == Rating.Medium)
+                        else if (card.rating == Rating.Medium)
                         {
-                            weighted.Add(temp);
-                            weighted.Add(temp);
+                            weighted.Add(card);
+                            weighted.Add(card);
                         }
                         else
                         {
-                            weighted.Add(temp);
+                            weighted.Add(card);
                         }
                     }
+                    validInput = false;
+
                     int numWeightedQuestions = 0;
-                    while(!validInput)
+
+                    while (!validInput)
                     {
                         try
                         {
@@ -170,24 +196,27 @@ namespace Recallify
                     {
                         Console.WriteLine("This number excedes the number of questions!");
                         Console.WriteLine("Using the number of question\n");
-                        numWeightedQuestions = temp;
+                        numWeightedQuestions = numQuestions;
                     }
+                    
 
-                    for (int i  = 1; i <= numWeightedQuestions; i++)
+
+
+                    for (int i = 1; i <= numWeightedQuestions; i++)
                     {
                         indexWeightedQuestion = rand.Next(weighted.Count);
-                        
-
-                        Console.WriteLine($"{weighted[indexWeightedQuestion].question}\n");
-                        Console.ReadKey();
-                        Console.WriteLine($"{weighted[indexWeightedQuestion].answer}\n");
-                        Rate(weighted[indexWeightedQuestion]);
+                        if (lastQuestion != indexWeightedQuestion)
+                        {
+                            Console.WriteLine($"{weighted[indexWeightedQuestion].question}\n");
+                            Console.ReadKey();
+                            Console.WriteLine($"{weighted[indexWeightedQuestion].answer}\n");
+                            Rate(weighted[indexWeightedQuestion]);
+                            lastQuestion = indexWeightedQuestion;
+                        }                 
                     }
                     DoRestart();
 
                 }
-
-
             }
 
             void Rate(Flashcard temp)
@@ -196,12 +225,12 @@ namespace Recallify
                 string input = Console.ReadLine().ToLower();
 
 
-                
+
                 switch (input)
                 {
                     case ("h"):
                         {
-                           
+
                             temp.rating = Rating.Hard;
                             break;
                         }
@@ -220,9 +249,6 @@ namespace Recallify
                             temp.rating = Rating.Medium;
                             break;
                         }
-
-
-
                 }
                 Console.WriteLine("\n");
 

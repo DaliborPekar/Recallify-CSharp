@@ -9,5 +9,15 @@ namespace Recallify
         public string question;
         public string answer;
         public Rating rating;
+
+        public Flashcard(string question, string answer)
+        {
+            
+            this.question = question;
+            this.answer = answer;
+            rating = Rating.Medium;
+
+
+        }
     }
 }
