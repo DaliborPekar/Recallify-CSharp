@@ -129,9 +129,9 @@ namespace Recallify
                     foreach (Flashcard card in flashcards)
                     {
 
-                        Console.WriteLine($"{card.question}\n");
+                        Console.WriteLine($"{card.Question}\n");
                         Console.ReadKey();
-                        Console.WriteLine($"{card.answer}\n");
+                        Console.WriteLine($"{card.Answer}\n");
 
                         Rate(card);
 
@@ -153,13 +153,13 @@ namespace Recallify
                     foreach (Flashcard card in flashcards)
                     {
 
-                        if (card.rating == Rating.Hard)
+                        if (card.Rating == Rating.Hard)
                         {
                             weighted.Add(card);
                             weighted.Add(card);
                             weighted.Add(card);
                         }
-                        else if (card.rating == Rating.Medium)
+                        else if (card.Rating == Rating.Medium)
                         {
                             weighted.Add(card);
                             weighted.Add(card);
@@ -207,9 +207,9 @@ namespace Recallify
                         indexWeightedQuestion = rand.Next(weighted.Count);
                         if (lastQuestion != indexWeightedQuestion)
                         {
-                            Console.WriteLine($"{weighted[indexWeightedQuestion].question}\n");
+                            Console.WriteLine($"{weighted[indexWeightedQuestion].Question}\n");
                             Console.ReadKey();
-                            Console.WriteLine($"{weighted[indexWeightedQuestion].answer}\n");
+                            Console.WriteLine($"{weighted[indexWeightedQuestion].Answer}\n");
                             Rate(weighted[indexWeightedQuestion]);
                             lastQuestion = indexWeightedQuestion;
                         }                 
@@ -231,22 +231,22 @@ namespace Recallify
                     case ("h"):
                         {
 
-                            temp.rating = Rating.Hard;
+                            temp.Rating = Rating.Hard;
                             break;
                         }
                     case ("m"):
                         {
-                            temp.rating = Rating.Medium;
+                            temp.Rating = Rating.Medium;
                             break;
                         }
                     case ("e"):
                         {
-                            temp.rating = Rating.Easy;
+                            temp.Rating = Rating.Easy;
                             break;
                         }
                     default:
                         {
-                            temp.rating = Rating.Medium;
+                            temp.Rating = Rating.Medium;
                             break;
                         }
                 }
