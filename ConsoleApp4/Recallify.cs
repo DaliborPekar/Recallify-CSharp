@@ -1,7 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Globalization;
-
-namespace Recallify
+﻿namespace Recallify
 {
     public enum Rating { Easy, Medium, Hard }
     internal class Recallify
@@ -16,81 +13,83 @@ namespace Recallify
 
             int indexWeightedQuestion;
 
-            bool modeMenu = true;
-
-            bool validInput = false;
-
             List<Flashcard> flashcard = new List<Flashcard>();
 
-            validInput = false;
-            bool corectMode = true;
+            bool modeMenu = true;
 
-            while (corectMode)
+            List<string> data = new List<string>();
+
+            if(File.Exists("flashcards.csv"))
             {
-
-                while (modeMenu)
+                string[] loading = File.ReadAllLines("flashcards.csv");
+                string[] y;
+                foreach (string x in loading)
                 {
-                    while (!validInput)
+                    numQuestions++;
+                    y = x.Split(",");
+
+                    if (Convert.ToString(y[2]) == "Easy")
                     {
-                        try
-                        {
-                            Console.WriteLine("Select mode: ");
-                            modeSelect = Convert.ToInt32(Console.ReadLine());
-                            validInput = true;
-                        }
-                        catch (FormatException)
-                        {
-                            Console.WriteLine("Enter a number!");
-
-                        }
+                        Flashcard card = new Flashcard(y[0], y[1], Rating.Easy);
+                        flashcard.Add(card);
                     }
-
-                    switch (modeSelect)
+                    else if (Convert.ToString(y[2]) == "Medium")
                     {
-                        case (1):
-                            corectMode = false;
-                            StudyMode(flashcard);
-                            
-                            break;
-
-                        case (2):
-                            corectMode = false;
-                            RecallMode(flashcard);
-                            
-                            break;
-
-                        case (3):
-                            corectMode = false;
-                            AddQuestions();
-                           
-                            break;
-                        default:
-                            corectMode = true;
-                            validInput = false;
-                            Console.WriteLine("That mode doesnt exist!");
-                            break;
-
+                        Flashcard card = new Flashcard(y[0], y[1], Rating.Medium);
+                        flashcard.Add(card);
                     }
-                    Console.WriteLine("Do you want to change mode? (y for yes or n for no):");
-                    string modeContinue = Console.ReadLine().ToLower();
-
-                    if (modeContinue == "y")
+                    else if (Convert.ToString(y[2]) == "Hard")
                     {
-                        modeMenu = true;
-                        validInput = false;
-                        corectMode = true;
-                        
+                        Flashcard card = new Flashcard(y[0], y[1], Rating.Hard);
+                        flashcard.Add(card);
                     }
-                        
-
-                    else
-                        modeMenu = false;
                 }
-
-                
 
             }
 
+            while (modeMenu)
+            {
+                bool validInput = false;
+                while (!validInput)
+                {
+                    Console.WriteLine("Select mode: ");
+                    string input = Console.ReadLine();
+
+                    if (int.TryParse(input, out modeSelect))
+                    {
+                        validInput = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Enter a number!");
+                    }
+                }
+
+                switch (modeSelect)
+                {
+                    case 1:
+                        StudyMode(flashcard);
+                        break;
+
+                    case 2:
+                        RecallMode(flashcard);
+                        break;
+
+                    case 3:
+                        AddQuestions();
+                        break;
+
+                    case 4:
+                        modeMenu = false;
+                        break;
+
+                    default:
+                        modeMenu = false;
+                        break;
+
+                }
+
+            }
 
             void AddQuestions()
             {
@@ -98,7 +97,6 @@ namespace Recallify
 
                 do
                 {
-                    
 
                     Console.WriteLine($"Enter {numQuestions + 1} question: ");
 
@@ -107,9 +105,7 @@ namespace Recallify
                     Console.WriteLine($"Enter {numQuestions + 1} answer: ");
                     string answer = Console.ReadLine();
 
-
                     Flashcard card = new Flashcard(question, answer);
-  
 
                     flashcard.Add(card);
 
@@ -123,7 +119,7 @@ namespace Recallify
 
             void StudyMode(List<Flashcard> flashcards)
             {
-                
+
                 while (restart)
                 {
                     foreach (Flashcard card in flashcards)
@@ -136,6 +132,7 @@ namespace Recallify
                         Rate(card);
 
                     }
+
                     DoRestart();
 
                 }
@@ -169,22 +166,21 @@ namespace Recallify
                             weighted.Add(card);
                         }
                     }
-                    validInput = false;
+
+                    bool validInput = false;
 
                     int numWeightedQuestions = 0;
 
                     while (!validInput)
                     {
-                        try
+                        Console.WriteLine("How many weighted questions do you want?: ");
+                        string input = Console.ReadLine();
+                        if (int.TryParse(input, out numWeightedQuestions))
                         {
-                            Console.WriteLine("How many weighted questions do you want?: ");
-                            numWeightedQuestions = Convert.ToInt32(Console.ReadLine());
                             validInput = true;
 
-
-
                         }
-                        catch (FormatException)
+                        else
                         {
                             Console.WriteLine("Enter a number!");
                         }
@@ -198,9 +194,6 @@ namespace Recallify
                         Console.WriteLine("Using the number of question\n");
                         numWeightedQuestions = numQuestions;
                     }
-                    
-
-
 
                     for (int i = 1; i <= numWeightedQuestions; i++)
                     {
@@ -212,8 +205,9 @@ namespace Recallify
                             Console.WriteLine($"{weighted[indexWeightedQuestion].Answer}\n");
                             Rate(weighted[indexWeightedQuestion]);
                             lastQuestion = indexWeightedQuestion;
-                        }                 
+                        }
                     }
+
                     DoRestart();
 
                 }
@@ -224,32 +218,30 @@ namespace Recallify
                 Console.Write("Rate this question(h for hard, m for medium, e for easy):");
                 string input = Console.ReadLine().ToLower();
 
-
-
                 switch (input)
                 {
-                    case ("h"):
-                        {
+                    case "h":
 
                             temp.Rating = Rating.Hard;
                             break;
-                        }
-                    case ("m"):
-                        {
+
+                    case "m":
+
                             temp.Rating = Rating.Medium;
                             break;
-                        }
-                    case ("e"):
-                        {
+
+                    case "e":
+
                             temp.Rating = Rating.Easy;
                             break;
-                        }
+
                     default:
-                        {
+
                             temp.Rating = Rating.Medium;
                             break;
-                        }
+
                 }
+
                 Console.WriteLine("\n");
 
             }
@@ -261,17 +253,19 @@ namespace Recallify
 
                 switch (check)
                 {
-                    case ("y"):
+                    case "y":
                         {
                             restart = true;
                             break;
                         }
-                    case ("n"):
+
+                    case "n":
                         {
                             restart = false;
 
                             break;
                         }
+
                     default:
                         {
                             Console.WriteLine("Invalid input! Abort!");
@@ -281,6 +275,13 @@ namespace Recallify
                 }
             }
 
+            foreach (Flashcard card in flashcard)
+            {
+                data.Add($"{card.Question},{card.Answer},{card.Rating},");
+                Console.WriteLine($"{card.Question},{card.Answer},{card.Rating},");
+            }
+
+            File.WriteAllLines("flashcards.csv", data);
 
         }
     }
